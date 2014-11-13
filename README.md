@@ -1,4 +1,4 @@
-SwipeList_RecyclerView
+Swipe_RecyclerView
 ======================
 
 <b>RecyclerView</b><br>
