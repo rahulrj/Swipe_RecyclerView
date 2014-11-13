@@ -16,6 +16,8 @@ Just Playing around with RecyclerView.<br><br>
 Here is the screenshot for the view.
 ![alt tag](http://i.imgur.com/ysLO3dA.png) <br>
 
+<h3>XML Usage</h3><br>
+The XML usage is the same as shown <a href="https://github.com/47deg/android-swipelistview#xml-usage">here</a>
 
 
 
