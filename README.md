@@ -16,25 +16,7 @@ Just Playing around with RecyclerView.<br><br>
 Here is the screenshot for the view.
 ![alt tag](http://i.imgur.com/ysLO3dA.png) <br>
 
-<h3>XML Usage</h3>
-```<com.fortysevendeg.swipelistview.SwipeListView
-            xmlns:swipe="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/example_lv_list"
-            android:listSelector="#00000000"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            swipe:swipeFrontView="@+id/front"
-            swipe:swipeBackView="@+id/back"
-            swipe:swipeActionLeft="[reveal | dismiss]"
-            swipe:swipeActionRight="[reveal | dismiss]"
-            swipe:swipeMode="[none | both | right | left]"
-            swipe:swipeCloseAllItemsWhenMoveList="[true | false]"
-            swipe:swipeOpenOnLongPress="[true | false]"
-            swipe:swipeAnimationTime="[miliseconds]"
-            swipe:swipeOffsetLeft="[dimension]"
-            swipe:swipeOffsetRight="[dimension]"
-           />
-           ```
+
 
 
 
