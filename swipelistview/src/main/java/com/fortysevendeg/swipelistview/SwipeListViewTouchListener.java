@@ -75,6 +75,8 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
     private int swipeDrawableChecked = 0;
     private int swipeDrawableUnchecked = 0;
 
+    private boolean onlyOneOpenedWhenSwipe = false;
+
     private LinearLayoutManager mLayoutManager;
 
     // Fixed properties
@@ -134,9 +136,9 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         this.parentView = parentView;
     }
 
-    public void setLayoutManager(LinearLayoutManager layoutManager){
+    public void setLayoutManager(LinearLayoutManager layoutManager) {
 
-        mLayoutManager=layoutManager;
+        mLayoutManager = layoutManager;
     }
 
     /**
@@ -167,7 +169,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             }
 
         });
-}
+    }
 
     /**
      * Set current item's back view
@@ -182,6 +184,11 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 swipeListView.onClickBackView(downPosition);
             }
         });
+    }
+
+    public void setOnlyOneOpenedWhenSwipe(boolean onlyOneOpenedWhenSwipe) {
+
+        this.onlyOneOpenedWhenSwipe = onlyOneOpenedWhenSwipe;
     }
 
     /**
@@ -402,6 +409,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
 
     /**
      * Dismiss an item.
+     *
      * @param position is the position of the item to delete.
      * @return 0 if the item is not visible. Otherwise return the height of the cell to dismiss.
      */
@@ -475,7 +483,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 count++;
             }
         }
-        if(SwipeListView.DEBUG){
+        if (SwipeListView.DEBUG) {
             Log.d(SwipeListView.TAG, "selected: " + count);
         }
         return count;
@@ -529,7 +537,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
      * @param position  Position of list
      */
     private void generateAnimate(final View view, final boolean swap, final boolean swapRight, final int position) {
-        if(SwipeListView.DEBUG){
+        if (SwipeListView.DEBUG) {
             Log.d(SwipeListView.TAG, "swap: " + swap + " - swapRight: " + swapRight + " - position: " + position);
         }
         if (swipeCurrentAction == SwipeListView.SWIPE_ACTION_REVEAL) {
@@ -625,6 +633,14 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             }
         }
 
+        final boolean aux = !opened.get(position);
+        if (onlyOneOpenedWhenSwipe) {
+            if (swap) {
+                opened.set(position, aux);
+                openedRight.set(position, swapRight);
+            }
+        }
+
         animate(view)
                 .translationX(moveTo)
                 .setDuration(animationTime)
@@ -633,7 +649,17 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                     public void onAnimationEnd(Animator animation) {
                         swipeListView.resetScrolling();
                         if (swap) {
-                            boolean aux = !opened.get(position);
+
+
+                            if (onlyOneOpenedWhenSwipe) {
+                                if (aux) {
+                                    swipeListView.onOpened(position, swapRight);
+                                } else {
+                                    swipeListView.onClosed(position, openedRight.get(position));
+                                }
+                            } else {
+
+                            }
                             opened.set(position, aux);
                             if (aux) {
                                 swipeListView.onOpened(position, swapRight);
@@ -642,10 +668,21 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                                 swipeListView.onClosed(position, openedRight.get(position));
                             }
                         }
-                        resetCell();
+
+
+                        if (!onlyOneOpenedWhenSwipe)
+
+                        {
+                            resetCell();
+                        }
+
                     }
+
                 });
-    }
+
+
+
+}
 
     private void resetCell() {
         if (downPosition != ListView.INVALID_POSITION) {
@@ -703,7 +740,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             }
 
             @Override
-            public void onScrolled(RecyclerView view, int dx,int dy) {
+            public void onScrolled(RecyclerView view, int dx, int dy) {
 //                if (isFirstItem) {
 //                    boolean onSecondItemList = firstVisibleItem == 1;
 //                    if (onSecondItemList) {
@@ -783,7 +820,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                     // dont allow swiping if this is on the header or footer or IGNORE_ITEM_VIEW_TYPE or enabled is false on the adapter
                     //boolean allowSwipe = swipeListView.getAdapter().isEnabled(childPosition) && swipeListView.getAdapter().getItemViewType(childPosition) >= 0;
 
-                    boolean allowSwipe=true;
+                    boolean allowSwipe = true;
 
                     if (allowSwipe && rect.contains(x, y)) {
                         setParentView(child);
@@ -829,7 +866,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 boolean swapRight = false;
                 if (minFlingVelocity <= velocityX && velocityX <= maxFlingVelocity && velocityY * 2 < velocityX) {
                     swapRight = velocityTracker.getXVelocity() > 0;
-                    if(SwipeListView.DEBUG){
+                    if (SwipeListView.DEBUG) {
                         Log.d(SwipeListView.TAG, "swapRight: " + swapRight + " - swipingRight: " + swipingRight);
                     }
                     if (swapRight != swipingRight && swipeActionLeft != swipeActionRight) {
@@ -903,7 +940,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 if (deltaMode > slop && swipeCurrentAction == SwipeListView.SWIPE_ACTION_NONE && velocityY < velocityX) {
                     swiping = true;
                     swipingRight = (deltaX > 0);
-                    if(SwipeListView.DEBUG){
+                    if (SwipeListView.DEBUG) {
                         Log.d(SwipeListView.TAG, "deltaX: " + deltaX + " - swipingRight: " + swipingRight);
                     }
                     if (opened.get(downPosition)) {
@@ -943,9 +980,26 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 break;
             }
         }
+
+        if (onlyOneOpenedWhenSwipe) {
+                        closeOtherOpenedItems();
+                        view.onTouchEvent(motionEvent);
+                        return true;
+                    }
         return false;
     }
 
+    private void closeOtherOpenedItems() {
+        	if (opened != null && downPosition != SwipeListView.NO_POSITION) {
+            	    int start = mLayoutManager.findFirstVisibleItemPosition();
+            	    int end = mLayoutManager.findLastVisibleItemPosition();
+            	    for (int i = start; i <= end; i++) {
+                	        if (opened.get(i) && i != downPosition) {
+                    	            closeAnimate(swipeListView.getChildAt(i - start).findViewById(swipeFrontView), i);
+                    		}
+                	    }
+            	}
+            }
     private void setActionsTo(int action) {
         oldSwipeActionRight = swipeActionRight;
         oldSwipeActionLeft = swipeActionLeft;
@@ -970,7 +1024,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             posX += openedRight.get(downPosition) ? -viewWidth + rightOffset : viewWidth - leftOffset;
         }
         if (posX > 0 && !swipingRight) {
-            if(SwipeListView.DEBUG){
+            if (SwipeListView.DEBUG) {
                 Log.d(SwipeListView.TAG, "change to right");
             }
             swipingRight = !swipingRight;
@@ -982,7 +1036,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             }
         }
         if (posX < 0 && swipingRight) {
-            if(SwipeListView.DEBUG){
+            if (SwipeListView.DEBUG) {
                 Log.d(SwipeListView.TAG, "change to left");
             }
             swipingRight = !swipingRight;
@@ -1009,24 +1063,25 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         }
     }
 
-    /**
-     * Class that saves pending dismiss data
-     */
-    class PendingDismissData implements Comparable<PendingDismissData> {
-        public int position;
-        public View view;
+/**
+ * Class that saves pending dismiss data
+ */
+class PendingDismissData implements Comparable<PendingDismissData> {
+    public int position;
+    public View view;
 
-        public PendingDismissData(int position, View view) {
-            this.position = position;
-            this.view = view;
-        }
-
-        @Override
-        public int compareTo(PendingDismissData other) {
-            // Sort by descending position
-            return other.position - position;
-        }
+    public PendingDismissData(int position, View view) {
+        this.position = position;
+        this.view = view;
     }
+
+    @Override
+    public int compareTo(PendingDismissData other) {
+        // Sort by descending position
+        return other.position - position;
+    }
+
+}
 
     /**
      * Perform dismiss action
@@ -1081,6 +1136,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
 
     /**
      * Will call {@link #removePendingDismisses(int)} in animationTime + 100 ms.
+     *
      * @param originalHeight will be used to rest the cells height.
      */
     protected void handlerPendingDismisses(final int originalHeight) {
@@ -1097,6 +1153,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
      * Will delete all pending dismisses.
      * Will call callback onDismiss for all pending dismisses.
      * Will reset all cell height to originalHeight.
+     *
      * @param originalHeight is the height of the cell before animation.
      */
     private void removePendingDismisses(int originalHeight) {

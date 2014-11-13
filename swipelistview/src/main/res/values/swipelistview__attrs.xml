@@ -20,6 +20,7 @@
 
     <declare-styleable name="SwipeListView">
         <attr name="swipeOpenOnLongPress" format="boolean"/>
+        <attr name="onlyOneOpenedWhenSwipe" format="boolean"/>
         <attr name="swipeAnimationTime" format="integer"/>
         <attr name="swipeOffsetLeft" format="dimension"/>
         <attr name="swipeOffsetRight" format="dimension"/>

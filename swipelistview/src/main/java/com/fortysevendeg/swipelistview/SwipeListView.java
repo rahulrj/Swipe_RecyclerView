@@ -127,6 +127,7 @@ public class SwipeListView extends RecyclerView {
     int swipeFrontView = 0;
     int swipeBackView = 0;
 
+
     private LinearLayoutManager mLayoutManager;
 
     /**
@@ -180,6 +181,7 @@ public class SwipeListView extends RecyclerView {
         int swipeMode = SWIPE_MODE_BOTH;
         boolean swipeOpenOnLongPress = true;
         boolean swipeCloseAllItemsWhenMoveList = true;
+        boolean onlyOneOpenedWhenSwipe = false;
         long swipeAnimationTime = 0;
         float swipeOffsetLeft = 0;
         float swipeOffsetRight = 0;
@@ -194,6 +196,7 @@ public class SwipeListView extends RecyclerView {
             swipeMode = styled.getInt(R.styleable.SwipeListView_swipeMode, SWIPE_MODE_BOTH);
             swipeActionLeft = styled.getInt(R.styleable.SwipeListView_swipeActionLeft, SWIPE_ACTION_REVEAL);
             swipeActionRight = styled.getInt(R.styleable.SwipeListView_swipeActionRight, SWIPE_ACTION_REVEAL);
+            onlyOneOpenedWhenSwipe = styled.getBoolean(R.styleable.SwipeListView_onlyOneOpenedWhenSwipe, false);
             swipeOffsetLeft = styled.getDimension(R.styleable.SwipeListView_swipeOffsetLeft, 0);
             swipeOffsetRight = styled.getDimension(R.styleable.SwipeListView_swipeOffsetRight, 0);
             swipeOpenOnLongPress = styled.getBoolean(R.styleable.SwipeListView_swipeOpenOnLongPress, true);
@@ -226,6 +229,7 @@ public class SwipeListView extends RecyclerView {
         touchListener.setSwipeActionLeft(swipeActionLeft);
         touchListener.setSwipeActionRight(swipeActionRight);
         touchListener.setSwipeMode(swipeMode);
+        touchListener.setOnlyOneOpenedWhenSwipe(onlyOneOpenedWhenSwipe);
         touchListener.setSwipeClosesAllItemsWhenListMoves(swipeCloseAllItemsWhenMoveList);
         touchListener.setSwipeOpenOnLongPress(swipeOpenOnLongPress);
         touchListener.setSwipeDrawableChecked(swipeDrawableChecked);
@@ -581,6 +585,11 @@ public class SwipeListView extends RecyclerView {
     public void setOffsetLeft(float offsetLeft) {
         touchListener.setLeftOffset(offsetLeft);
     }
+
+    public void setOnlyOneOpenedWhenSwipe(boolean onlyOneOpenedWhenSwipe) {
+
+            	touchListener.setOnlyOneOpenedWhenSwipe(onlyOneOpenedWhenSwipe);
+           }
 
     /**
      * Set if all items opened will be closed when the user moves the ListView

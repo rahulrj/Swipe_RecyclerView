@@ -37,6 +37,7 @@
             swipe:swipeDrawableUnchecked="@drawable/choice_unselected"
             swipe:swipeCloseAllItemsWhenMoveList="true"
             swipe:swipeMode="left"
+            swipe:onlyOneOpenedWhenSwipe="true"
             />
 
 </LinearLayout>
